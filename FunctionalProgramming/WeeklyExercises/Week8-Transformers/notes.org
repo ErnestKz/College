@@ -1,0 +1,30 @@
+- Referece solution touches 7 lines.
+  - 1 is import.
+  - 3 are replacing "error" with "throwError"
+- No heavy structural changes needed
+
+- If change the definition of TI and the 
+  runTI function, everything falls into place.
+
+- Last time we investigated that it would be 
+  needed to propagate errors by rewiring the mgu 
+  to return "Either String (Subst, Type)"
+
+- An alternative approach would be to use  
+  - ExceptT monad transformer 
+  - turn TI into a monad that also has exception handling
+- This is the goal of this exercise
+
+- Hints
+  - ExceptT is defined in "Control.Monad.Except"
+    - Add "mtl" as a dependency in stack file.
+  - Module defines a three things that is needed:
+    - ExceptT itself
+    - runExceptT function
+    - throwError function
+  - Main.hs has some sample code to type check.
+    - By default it checks the value constructed by ex6.
+    - But the expression defined in "ex4" will fait to 
+      type check.
+    - Might be useful for testing error handling code.
+  

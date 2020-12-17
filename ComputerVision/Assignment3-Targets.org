@@ -1,0 +1,88 @@
+* Sample Exam Question - Assignment 3
+
+** (a) APPLICATION QUESTION ~ 70%
+- Describe two appraches to find the location of the target in the images.
+  (1). Using edge detection.
+  (2). Using region detection
+
+- Each solution must consist of a series of computer vision techniques.
+  - Include details of how techniques will be applied, with expected input and output for each technique.
+
+** (b) APPLICATION QUESTION ~ 30%
+- Given a video of target being shot, taken from static camera.
+  - Describe how the shots would be located.
+     - Score which shots appear on the target.
+
+- Solution must consist of a series of computer vision techniques.
+  - Include details of how techniques will be applied, with expected input and output for each technique.
+
+** Edge Detection Revision
+*** Hough transform
+- Transforming from image space directly to the likelihood of the existence of 
+  some image or shape within the scene.
+
+- Transform image space (x,y) to hough space (r, theta)
+- Map edge point to a series of lines
+
+**** algorithm
+- Take hough space and initialise every point to 0 
+
+- For any edge point increase the hough accumulator by one
+  - Create all the lines that can go through that edge point 
+
+- Then look for the maximum of a circle being in the image 
+
+
+- Maybe has to be in a particular region in the hough space.
+
+**** Circle
+- Have to assume a constant radius r
+- (i-a)^2 + (j-b)^2 = r^2
+
+- from image space (x, y)
+- to hough space (a, b)
+
+- 3d accumulator, 2 dimensions for the location, 1 dimension for the size
+
+
+** Region Detection
+*** Connectivity & Connected Component Analysis
+*** kMeans Clustering
+
+*** Waterhsed Segmentation 
+*** Mean Shift Segmentation
+
+
+** (a) Solution
+*** Edge detecion
+- Given image 
+- Get binary edge image
+- 3d hough circles
+- Consider top 3 
+
+- Find the top three R values which contain a local maxima.
+
+- Hough circle transform
+  - Consider all the local maxima points in the image that has been transformed to hough space
+    - Out of the those get the three largest circles
+
+
+
+
+
+*** Region Detection
+- Mean shift segmentation
+  - Takes into account spatial location as opposed to k means which does not
+- Spatial radius and colour radius
+
+- Take the 4 labels which have the highest pixel cardianlity
+  - Discard the one with the highest cardianlity - the outer white region
+  - The remaining will be the circles.
+
+** (b) Solution
+ - Some sort of background model
+   - Would need to adjust to slightly different locations of target.
+   - Would need to adjust to the difference in colours.
+
+- Use hough method to retrieve the center of the circles and then look if the point lies within it
+  - starting from the smallest

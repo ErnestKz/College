@@ -1,0 +1,43 @@
+- 2 dataset 1 file
+- 3 columns of data 
+  - 2 input features 
+  - third positive or negative 1 valued target
+* Assignment 
+- Go through full ML workflow for each of the datasets
+  - Feature selection
+  - Model selection
+  - Model training and evaluation
+- Not all datasets are useful, sometimes fails to capture 
+  important relationships or just too noisy
+
+** (i) Start with the first dataset
+*** (a) Logistic Regression Workflow
+- Augment two features in dataset with polynomail features
+- Train logistic regression with L2 penalty 
+- Cross validation
+  - To select the maximum order polynomial
+  - Weight C given penalty in cost function
+- Present data
+  - Cross-validation plots
+    - Error bars in cross validation plots
+  - Plots of model predictions and training data
+  - Clear explanations to justify choices
+*** (b) kNN Classifier
+- Use KNN classifier on the data.
+- Cross-validation to select k
+  - Presenting the data and explanations/analysis
+- Explain whether or not worth augmenting features with polynomial features
+  for a kNN clasifier.
+*** (c) Confusion Matrices for Logisitic Regression and kNN
+- Confusion matrix
+- One or more baseline classifier confusion matrix 
+*** (d) ROC for Logistic Regression and kNN 
+- Plot ROC curves
+  - Plot in the ROC plot corresponding to baseline classifiers.
+*** (e) Evaluate and compare performance
+- Using (c) and (d) compare performance of Logistic Regression, kNN, and
+   baseline classifiers.
+- Is one classifier significantly better or worse than the other?
+- How do the ROC curves compare with the random classifier.
+- Which classifier recommended?
+** (ii) Repeat for second dataset

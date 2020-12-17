@@ -1,0 +1,33 @@
+* Red-Black Tree
+
+- A binary search tree
+  - Each node is labelled with a colour
+    - Either red or black
+
+- Constructed such that
+  - Root node, and all leaf nodes, are black.
+
+  - Each red node has black children.
+  
+  - All paths from a node to any of it's descendant leaf nodes will
+    have an equal number of black nodes.
+
+
+
+
+* Task
+- Write a declaration for a Haskell data type
+  - "RedBlack a"
+  - Which uses GADTs to ensure that the Red Black Tree invariants cannot be violated.
+
+- Probably want to use ther Peano arithmetic types.
+  - Zero 
+  - Succ
+  - so that I have a type parameter that can be used to mention the 
+    count of black nodes in a subtree
+
+- Internal node type probably has three type parameters
+  - One to talk about the type stored in the tree.
+  - Two to do with the invariants
+    - Colour
+    - Number of black nodes between this node and leaves under it

@@ -1,0 +1,6 @@
+{
+    "set2": ["Bein4Li", "Bein3Re", "Bein2Li", "Bein1Re"],
+    "set1": ["Bein4Re", "Bein3Li", "Bein2Re", "Bein1Li"],
+    "legs" : ["set1", "set2"]
+}
+

@@ -1,0 +1,433 @@
+* Brief
+- Shape Server
+
+- Drawing eDSL
+  - Can take design from shape language in lectures
+    - or from the Pan language 
+    - or both
+
+- Combine with the two web eDSL
+  - Scotty
+  - Blaze
+
+- Produce a web application capable of delivering images.
+  - The point is to create a DSL that can be used to specify images.
+
+- Can use JuicyPixels to create the images.
+
+- Project tasks in detail:
+  - Drawing eDSL
+
+    - Provide at least these shapes:
+      - Circle
+      - Rectangle
+      - Ellipse
+      - Polygon (closed convex polygon defined by series of points)
+
+    - Provide following basic set of transformations:
+      - Scale
+      - Rotate
+      - Translate
+    - To combine with the shapes to produce drawings
+      - Don't have to preserve the design of the original shape language.
+
+   - Provide a way to specify colour for each shape.
+     - Can be simple case with a single colour
+     - Or function which can provide gradients.
+
+   - Provide a way to maks images so that when one is overlaid with another one, the user can 
+     specify which one is seen.
+     - Can be a simple boolean mask that allows only one image to show through.
+     - Or a more sophisitcated blending function that specifies how much each image 
+       contributes to each pixel.
+
+  - As UI provide scotty application which can render sample images that demonstrate the result.
+    - Images should be returned as PNG graphics rendered using JuicyPixels.
+    - Produce the text of the DSL program that produced the image in the web page.
+      - So that user of the web app can see how the image was produced.
+	- Idea is that a future improvement could allow user to edit this text and re-render it.
+
+  - Implement at least one optimisation to the DSL program that is run before it is rendered.
+    - Could be ensuring that a shape that cannot be seen is removed from the drawing prior to rendering.
+    - Could be transformations are optimised (multiple transformations could be merged)
+    - Or something else
+      
+
+        
+* Scotty
+- Scotty doesnt impose an application lifecycle model on your program, it 
+  just gives you ways of responding to requests
+  - Doesn't enforce a model for templating or persistence!
+
+- Special comment to turn on a feature of the compiler
+
+- In main, need an IO action
+  - which is scotty
+  
+
+** ScottyM
+- Web server is a thing that sits there and lives
+  in a response-request kind of framework
+
+- Browser comes along and makes a request for some resource
+  - Server then responds by running some action that generates
+    data, and sends it back to the browser
+- Cycle continues as long as the server is running 
+
+- Browser can make requests in different ways
+  - As well as asking for certain named resources
+    - Can ask for them in different ways
+      - Can upload a little extra data for example
+        - Returning the results of a form
+
+- To configure scotty, we run a series of actions, each of 
+  which describes a route that the web browser could make
+  its request via
+- General form of that looks like:
+#+BEGIN_SRC haskell
+addroute :: StdMethod -> RoutePattern -> ActionM () -> ScottyM ()
+#+END_SRC
+- When a request is made using some method 
+  - part of the http protocol
+    - things like GET, PUT, POST
+    - where we either make a simple request thats nothing but the string 
+      of the url in it
+    - or theres a request where theres also some additional data associated with it
+- So theres a request 
+  - via some method *StdMethod*
+
+  - for some named resource *RoutePattern*
+    - index.html
+    - /files
+    - /documents
+    - /things
+    - /images
+    - /fluffycat.jpeg
+    - we call these route patterns in scotty terminology 
+      - mightn't be some static fixed string 
+      - can be anything that comes in the form /images/<anyfilename>
+
+- *RoutePattern*
+  - Describes the form of possible incoming requests
+    - Maybe one pattern is just for working with images
+    - and other pattern is just for working with style sheets
+
+- By specifying the method and pattern, we've uniquely identified 
+  which browser requests we're intereseted in, so the next 
+  thing we specify is which action should be taken
+  - when the method and route pattern match the request
+    that's being made
+  
+- next thing we specify is what action *ActionM ()* should be taken when the method and the 
+  route pattern match the request that's being made
+
+  - Those three things together form a *ScottyM ()* action.
+    - By running that action we can configre the server to understand
+      StdMethod -> RoutePattern to mean ActionM () (perfrom this action)
+
+- addroute is a general form function, but can use helper functions 
+  - like get, that fill in commonly using things like *StdMethod*
+    - get requests are where just the string in the url matters
+    - post requests where ther are additional data like a form submission
+    - or you dont care if its get or post, respond with the same action
+
+#+BEGIN_SRC haskell
+get      :: RoutePattern -> ActionM () -> ScottyM ()
+post     :: RoutePattern -> ActionM () -> ScottyM ()
+matchAny :: RoutePattern -> ActionM () -> ScottyM ()
+notFound ::                 ActionM () -> ScottyM ()
+#+END_SRC
+- these presupply the method and the other arguments are filled in
+- notFound is a catch all case
+  - it says this is the action that will be performed when no 
+    route that youre configured with matches 
+    - can send an error page saying you don't understand the route 
+
+** RoutePattern
+- Route patterns can be created from strings
+
+#+BEGIN_SRC haskell
+capture :: String -> RoutePattern
+regex   :: String -> RoutePattern
+literal :: String -> RoutePattern
+#+END_SRC
+
+- You can say "i literraly just want this string to match" with:
+  - literal "\index.html"
+  - when exactly that is in the contents of the webbrowsers url, this will match
+
+- Can also do regrex expression matching with:
+  - regex "<someregex>"
+
+- Can also say something called a capture
+  - like literal but with variables
+    - some part of the url has a configuration for it
+      - something to fill in
+
+- Direct manipulation of HTTP request
+#+BEGIN_SRC haskell
+function :: (Request -> Maybe [Param]) -> RoutePattern
+#+END_SRC
+- this function says
+  - "here is a function that you supply to match the route pattern"
+  - if it returns Just some list, then the route matched and run the 
+    associated action, but if it returns nothing, then we have a failure 
+- This is the general purpose way to write these
+  - of course things like literal can have things like "==" the string
+    as the function there 
+    - or rather some function that wraps that and returns Just emptylist
+      in the case where the "==" matches the string exactly 
+
+- we'll mostly use these three helper functions 
+  - the last one is just there for some quite specific cases rather general matching
+
+** Overloaded Strings
+- How come we wrote this:
+#+BEGIN_SRC haskell
+get "/" $ do ...
+--- instead of 
+get (capture "/") $ do ...
+#+END_SRC
+
+- The answer is OverloadedStrings that overloads string literals
+
+- Normally in haskell a string literal looks like
+  -  "some text"
+  - is of type String (which is an alias for [Char]
+    - in the Haskell library there are many things like
+      - bytestring 
+      - Data.Text
+      - that are more effecient way of representing string literals
+- And something the thing we want is none of those things from a string literal 
+- Would be great if in haskell we could overload string literals 
+  so that the correct type can be chosen by the compiler just the way they are 
+  for numeric literals 
+
+- This has been included as an extension in ghc and this is one of the many 
+  extension they will end up adding to the haskell standard
+
+
+
+
+- overloaded strings lets us place text in the program and have it be of type
+#+BEGIN_SRC haskell
+IsString a => a
+#+END_SRC
+
+- double quoted string literal is something of the type a, where a is any type
+  that has an instance of IsString in it
+
+#+BEGIN_SRC haskell
+class IsString a where
+  fromString :: String -> a
+#+END_SRC
+
+- IsString is a very simple class
+  - The compiler doesn't need to do much here, all the compiler needs to do 
+    is to create a string as a linked list as normal
+    - Then through type inference
+      - Figure out what type is actually needed at the place where we
+        are using the string
+        - pick the correct instance of IsString 
+         - so that we can convert the strings 
+
+- scotty includes an instance of IsString for route patterns:
+#+BEGIN_SRC haskell
+instance isString RoutePattern where
+  fromString = caputre . pack
+#+END_SRC
+- and it makes this decision 
+  - uses the capture function 
+  - to convert a text object to a routepattern object
+
+- The pack function is from the text library 
+  - What pack does is turn the string into a DataText
+- The capture function is one we've just seen from the scotty library 
+  - What caputre does is take a DataText and give you a route pattern
+
+- when using double quote slash, we are quitley using the capture function rahter than
+  declaring just a string literal 
+
+- if we want something else, we can explicitly use of of the routepattern functions
+
+- pretty typical use of overloaded strings in a domain specific langauge 
+  - has the down side that we're not really doing compile time checking 
+    on those strings 
+    - it has the upside that it's cleaning up our sytnax really nicely 
+      - can use the standard string notation where it makes sense to do that 
+	and our dsl looks simple 
+
+#+BEGIN_SRC haskell
+main = scotty 3000 $ do 
+  get "/" $ do 
+    html "Hello World!"
+#+END_SRC
+
+- lets turn our attention to the inner html function that's being 
+  run if the browser makes a request for that route object 
+  - once the route has been matched, the relevant function will be run 
+    in response 
+
+#+BEGIN_SRC haskell
+html :: Text -> ActionM ()
+#+END_SRC
+- its an action in the ActionM monad
+  - it returns a bunch of headers that configure the browser to understand 
+    the response as a html value
+    - and then it returns the arguemt as the body html content that should be sent
+      to the browser
+- fairly typical for the scotty ActionM () values
+  - They will either
+    - Set some headers
+    - or 
+    - Set some headers and return a body 
+
+- we can do different kinds of body responses 
+  and send things other than htnl objects to the browser
+
+#+BEGIN_SRC haskell
+text ::                   Text -> ActionM ()
+file ::               FilePath -> ActionM ()
+json :: ToJSON a => a          -> ActionM ()
+raw  ::             ByteString -> ActionM ()
+#+END_SRC
+
+- We can send back
+  - plain text, if we don't want the browser to 
+    interpret the body as having htmml tags in it
+    - that just sets the text plain header and just
+      sends whatever the argument is 
+- we can return the contents of a file 
+    - ActionM () runs inside the IO () monad
+      - so we're kind of ok there 
+
+- we can return a json object 
+  - json formatted bunch of data
+  - When writing an api, can write an instance of ToJSON
+    - that produces an ActionM () result for that value
+     - some record or some algebraic data type
+     - if you're writing an api level scotty program 
+
+- can also return raw data 
+  - a zip file
+  - pack the contents of the zip file into a byte string 
+    - tell scotty that you want to return raw data 
+    - that the browser should not try to interpret 
+      - the browser will generally just save that in the 
+	downloads folder 
+
+- lots of different ways we can respond 
+  - although the html function is probably the most common because
+    we are normally writing a web service 
+
+- we can also configure some header data 
+
+#+BEGIN_SRC haskell
+status    :: Status         -> ActionM ()
+addHeader :: Text   -> Text -> ActionM ()
+setHeader :: Text   -> Text -> ActionM ()
+redirect  :: Text           -> ActionM a
+#+END_SRC
+
+- if we are interested in adding some other header data to the response
+  - can set a certain status code 
+  - or add or modify some headers
+    - headers are just key value pairs 
+    - so they are the name of the header and the
+      contents of the header 
+    - We can set cookies and add extra headers
+      - including non-standard headers, just 
+	by using addHeader and setHeader functions
+	- set the value of an existing header
+	- or add a new header
+
+- these are each ActionM values
+  - so we can bind them together
+    with other ActionM values 
+    - that are returning bodies 
+    - and scotty will do the right thing
+
+- this is where the dsl aspect of it comes in
+  - we write somthing that talks about formulating a http response 
+    - and scotty takes care of assembling all the final results
+
+- redirect is a special case 
+  - if you return a redirect header, no other actions
+    that follow that specification of actions will be run
+    - because you would have redirected the browser to some new resource 
+
+#+BEGIN_SRC haskell
+main = scotty 3000 $ do
+  get "/" $ do 
+    html "Hello World!"
+
+  get "/greet/:name" $ do
+    name <- param "name"
+    html $ mconcat ["Hello there ", name]
+#+END_SRC
+
+- last route is a capture
+  - this is what overloaded strings does to string literals
+  - its got that ":identifier" substring in it
+    - this is called a capture 
+      - this is saying "this is a wildcard part" of the 
+	pattern
+      - can refer to whatever that string was by reffering to 
+	the param function 
+
+- param function is an ActionM () function which returns a value 
+  - in this case the value will be a string but it doesn't have to be 
+    - param could be an integer or something else
+    - it's actually a text so we want to concatenate it with another text 
+      - can use ++ if they were strings
+      - can use concat if they were list of strings 
+      - but if its texts, then need another function that takes a list of texts
+	- as it happens texts are monads 
+	  - there is a monadic equivalent of concat 
+	    - fmap is to map as
+	    - mconcat is to concat 
+              - the function we've would've writtern if we knew everything was going
+		to be a monad
+
+
+#+BEGIN_SRC haskell
+param :: Parseable a => Text -> ActionM a
+#+END_SRC
+
+- parseable typeclass that scotty provdes
+- pass in the text from the parameter
+  - that text will be whatever was in the route pattern after : 
+    - there could be multiple wildcards in the route 
+- what it parses to is.. it depends
+   - since its in a list of strings it will be a text or 
+     string or whatever overloaded strings turns that into
+
+- there is a parseable instance for text, strings and so on
+- the compiler is able to choose the correct instance 
+  to parse that in 
+
+- if the it was a list of numbers and we are expecting a number 
+  so that we can sum them up and turn it into a string and send it back
+  - it would choose a differnt instance to parse the string 
+
+- This can fail at run time
+  - but here we have no choice, don't know what the data
+    will be until the browser gives it to us
+
+- This was always going to need some possible error handling 
+  - scotty provides an error handling mechanism for us 
+
+    
+** Optimization
+Given a drawing which is a list of Shapes and their Z index values
+
+sort drawings by z index
+
+take the higest z index 
+
+compute the pixel and store it in a lookup if its in the shape, otherwise leave the pixel coord in the lookup empty
+
+for the next shapes
+
+first check the lookup and if there exists a pixel use that one
+  else calculate the pixel for that shape

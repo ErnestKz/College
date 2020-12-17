@@ -1,0 +1,16 @@
+- Load all the frames in memory 
+
+- Show each step of the pipeline at once
+- Use arrows to choose which frame is selected
+
+- Bind keys to be able to adjust the parameters in the pipeline
+- At the start of the application, print out the keybindings
+- Every time a key is pressed, the frames shown are updated
+- The console prints what has been updated
+
+
+
+
+- specify which is input and which is output
+- specify whether to show or not
+- specify which parameters to bind to a key

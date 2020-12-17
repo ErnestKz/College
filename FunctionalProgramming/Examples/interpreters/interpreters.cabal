@@ -1,0 +1,45 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 5e35061653bc9f335f94f88da6f4eec5d3a70675fe2d6e3fa31eb456ae87a59a
+
+name:           interpreters
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
+homepage:       https://github.com/gdstrong/interpreters#readme
+bug-reports:    https://github.com/gdstrong/interpreters/issues
+author:         Glenn Strong
+maintainer:     Glenn.Strong@scss.tcd.ie
+copyright:      (c) 2020 Glenn Strong
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/gdstrong/interpreters
+
+executable interpreter
+  main-is: main.hs
+  other-modules:
+      Interpreter1
+      Interpreter2
+      Interpreter3
+      Interpreter4
+      Interpreter5
+      Interpreter6
+      Interpreter7
+      Paths_interpreters
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , mtl
+  default-language: Haskell2010

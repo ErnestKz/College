@@ -1,0 +1,128 @@
+- Simple server which will asynchronously compute and deliver 
+  values for the user.
+
+- Small interactive program which will use 
+  - forkIO
+  - Channels
+
+  - To coordinate worker threads that will compute values in the 
+    background.
+
+
+
+- User will provide input data.
+- Or request a result.
+
+- Each time they supply data, a worker thread is spawned (forkIO) which
+  will write a result back to a channel.
+  - Keep a channel that's shared between all worker threads and the 
+    main thread.
+
+- Each time the user requests a result
+  - First item in the channel is printed back
+  - The program will block if there is no result
+    in the channel yet
+
+
+
+- Only three things the user can provide as input:
+  - A number 
+    - This will trigger a new thread to calculate a value.
+      (Some long-ish running computation)
+  - A string saying "result".
+    - This will print the result of one of the completed threads
+      from the channel, blocking if necessary
+  - A string saying "quit", which will end the program.
+    - Print out any results currently in the channel.
+
+
+- Can use "interact" from the Prelude to construct the main loop.
+
+
+
+** interact :: (String -> String) -> IO ()
+
+- interact :: (String -> String) -> IO ()
+
+- Higher order function
+- Takes an argument of type (String -> String)
+  - For processing a string.
+
+  - Runs the function over the standard input stream.
+  - Printing the result to standard output.
+
+- interact is defined as 
+#+BEGIN_SRC haskell
+interact :: (String -> String) -> IO ()
+interact f = do s <- getContents
+                 putStr (f s)
+#+END_SRC
+#+BEGIN_SRC haskell
+interact :: (String -> String) -> IO ()
+interact f = getContents >>= (\s -> putStr (f s))
+interact f = getContents >>= putStr . f
+
+
+getContents  :: IO String
+putStr        :: String -> IO ()
+(>>=)         :: IO a -> (a -> IO b) -> IO b
+#+END_SRC
+
+
+- Reads a string from standard input.
+- Writes the standard output.
+  - Result of applying its argument function to that string.
+
+*** Lines oriented IO
+- Only a small number of programs operate on unstructured input streams.
+- Far more common to treat an input stream as a list of lines.
+  - To break the string up into lines, we use the 'lines' function.
+#+BEGIN_SRC haskell
+lines :: String -> [String]
+#+END_SRC
+- Takes a string and breaks it up into a list of strings
+  - Splitting on newlines
+
+- To joing a list of strings back into a single string
+  - Inserting newlines
+  - Use the 'unlines' function
+
+#+BEGIN_SRC haskell
+unlines :: [String] -> String 
+#+END_SRC
+- There are also similar functions for splitting on words
+  - 'words'
+  - 'unwords'
+- To count the number of lines in a file
+
+#+BEGIN_SRC haskell
+main = interact (count . lines)
+#+END_SRC
+
+
+channelExample = do
+  hSetBuffering stdout NoBuffering
+  c <- newChan
+  forkIO (worker c)
+  forkIO (forever $ putChar '*')
+  readChan c
+
+worker :: Chan Bool -> IO ()
+worker c = do
+  mapM putChar "Printing all chars"
+  writeChan c True
+
+
+-- -- is it even possible to use interact to read from a channel?
+-- interactIO = interact (unwords . processInput . words)
+-- processInput :: [String] -> [String]
+-- processInput x = map (\x -> x) x
+-- printEachLine = interact (unlines . (map $ \x -> x) . lines)
+-- count s = show (length s) ++ "\n"
+-- countLines = interact (count . lines)
+-- -- Reads a whole file in by setting the stdin with the < operaotr
+-- -- prints out how many characters are in the file
+-- stdInputWholeCount = interact count
+-- -- Takes in input line by line and outputs the length of the line
+-- lineCount = interact (unlines . (map $ \x -> show $ length x) . lines)    
+

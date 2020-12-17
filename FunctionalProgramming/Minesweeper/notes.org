@@ -1,0 +1,26 @@
+* Minesweeper
+
+- Squares with some of the being a bomb
+- Clicking a square which doesn't have a bomb reveals number of 
+  neighbouring squares containing bombs
+
+- If you open a square with 0 neighbouring bombs, all of its neighbours automatically open.
+
+- First square opened is never a bomb
+
+
+
+- n by m grid 
+- shown to the user
+
+- user clicks
+  - bombs are randombly placed in 
+
+
+- board is defined by:
+  - its size
+  - where the user has clicked
+  - previous state ( where the bombs have been generated )
+
+- oldboard cellclicked -> newboard
+

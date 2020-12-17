@@ -1,0 +1,124 @@
+* Assignment 8
+- Closer look at convolutional networks.
+
+** (i) 
+*** (a)
+- Vanilla python
+  - Function that takes as input 
+    - n x n array
+    - k x k kernel
+  - convolves the kernel to the input array and returns the result
+
+*** (b)
+- Select image
+- Load image as three RGB arrays, pick one of the arrays to work with.
+  - Can be done with the PIL package
+- Apply function to the image with the given kernels
+
+#+begin_src python
+import numpy as np
+from PIL import Image
+im = Image.open('tcd.jpg')
+rgb = np.array(im.convert('RGB'))
+r=rgb[:,:,0] # array of R pixels
+Image.fromarray(np.uint8(r)).show()
+
+k1 = np.array([(-1,-1,-1), (-1,8,-1), (-1,-1,-1)])
+k2 = np.array([(0,-1,0), (-1,8,-1), (0,-1,0)])
+#+end_src
+** (ii)
+- Keras to build a convolutional network for classification of images.
+*** (a)
+- Inspect code and write down the architecture of the ConvNet it uses.
+  - i.e what are the layers and for each conv layer what size of kernel is used
+    how many output channels there are, and so on
+*** (b)
+- Run the code, note the output.
+**** (i)
+- How many params does keras say the model has?
+- Which layer has the most parameters and why?
+- How does performance on test data compare with performance on training data.
+- Compare against baseline
+**** (ii)
+- Diagnositics from overfitting and underfitting in graph.
+**** (iii)
+- Effects of increasing the amount of training data on perfomance.
+  - 5k, 10k, 20k, and 40k
+- Record the time it takes for each run.
+- Analyse
+**** (iv)
+- L1 regularisation on softmax output layer.
+- Vary weight parameter
+- Discuss
+
+*** (c)
+**** (i)
+- ConvNet downloaded uses strides to downsample.
+- Modify the convnet to use max pooling
+  - ie 16 channel and 32 channel "same" conv layer followed by a 2,2 max pool layer
+**** (ii)
+- Evaluate performance
+- How many parameters does Keras say this ConvNet has?
+- How dfoes time taken to train and accuracy compare.
+
+
+* Known unknowns
+- What is convolution exactly.
+- What conv net architecure consists of.
+  - Specifically the notations
+- What are parameters in a ConvNet
+- How to use keras to ask about parameters
+- How conv nets are trained
+- How does the L1 penalty 
+- What is the softmax output layer
+- Different downsampling ways
+- How downsampling works
+
+  
+
+* Lectures 
+** ConvNets 1 - What is convolution
+- DeepLearning == ConvNets
+
+- Anywhere there is a sequence of data, tempting
+  to use convnets
+
+- Sequence of networks
+  - Input
+  - Output 
+  - Multiple hidden layers
+
+*** Convolutional Layer 
+- Takes a matrix as the input
+- Takes a kernel
+- Convolve input with the kernel to get the output 
+
+- Put kernel over input
+  - Multiply corresponding things together and add them up for one output
+
+- Do for every position on the input
+
+
+
+
+
+
+layer 1 3x3 kernel with 16 channels, relu, same padding
+layer 2 3x3 kernel with 16 channels, 2 strides, same padding, relu
+layer 3 3x3 kernel with 32 channels, same padding, relu
+layer 4 3x3 kernel with 32 channels, 2 strides, same padding, relu
+
+dropout 0.5
+flatten
+
+
+Increase amount of trainig data. 5k, 10k, 20k, 40k epochs at 20   
+
+dense 10 classes, softmax activation, regularization
+
+
+layer 1 448
+2 2320
+3 4640 
+4 9248
+dense 20490

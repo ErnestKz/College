@@ -1,0 +1,103 @@
+Extend the theory learned in lectures.
+
+Creating an interactive spooky scene set in a 
+dark space, with crowds of insects/creatures.
+
+* Specifications
+** Basic Functionality ~ 45%
+- Crowd of animated insects or creatures moving around.  ~ 15%
+  - Implemented any way you like.
+     
+- Texture mapping scene and creatures using image file.  ~ 15%
+  - Higher marks for quality and quantity.
+
+- Implementation of Phong Illumintation model.           ~ 15%
+  - Specular highlights must be visible.
+  1. Multiple light sources.
+     - Can be point, directional, or, spotlight.
+  2. Multiple different material properties.
+     - At least 5 on 5 different objects.
+  3. Normal must be transformed correctly.
+  4. Shading must use a combination of
+     - Ambient
+     - Diffuse
+     - Specular lighting
+
+** Advanced features ~ 55%
+- 15% per perfectly-executed feature
+  - Simple features will receive less.
+  - Well-designed features will receive more.
+
+- 55% comes out to possibly 
+  - 4 features in total
+    - 3 big ones     ~ 45%
+    - 1 medium one   ~ 10%
+
+
+*** Some cool advanced features
+- Physics and collision boxes embedded in the model animations.
+
+- Procedurally generated meshes.
+
+- Animation system.
+
+- Cool particle physics and effects.
+  - Embers flying about lighting up room.
+
+- In game editing.
+  - Selecting game objects in 3D.
+  - Move and rotate selected objects and change its attributes.
+
+- GUI to see current selected objects attribute.
+  - Implement fonts.
+  - Show keyboard shortcuts to do things.
+
+- Pause and play scene.
+
+- Serializse world setup to file and read from it.
+  - Load scene from file.
+  - Save scene into file
+
+
+
+
+
+
+
+
+* Multipe Spider Management
+
+- A list of spiders
+ 
+- On each draw loop
+  - update each spiders meshes
+  - draw
+
+
+- Addition to the model class:
+  - Model has a mapping or function
+    that takes time as an argument and 
+    determines by how much it should move. 
+
+  - Model also has mapping that determines 
+    which direction it should rotate.
+
+
+
+
+** Intelligence approach
+- define the places you want the spider to 
+  travel to 
+
+- spider will move in that direction in a way 
+  that its possible
+
+- spiders have a toolset which they can use 
+  that allows them to move
+  - the spider can only move foward in the direction 
+    its facing
+  - the spider can rotate its own body 
+
+
+
+

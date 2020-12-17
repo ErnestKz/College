@@ -1,0 +1,42 @@
+- Design issue with type inference
+  - Doesn't handle errors gracefully (or at all)
+
+- Problem is that the inference function promises (in it's type) to produce
+  a Type value for every expression.
+  - But some expressions don't have a valid type in our system.
+
+- Number of ways to solve this.
+  - Most direct, working from the sample code as a base.
+
+- Rewrite type inference implementation so that the Either type is used to signal success 
+  and/or failure in the inference opeartion.
+  - Leaving no use of the error function in the final version.
+- Turns out to be quite a big job.
+  - Assumption that the TI monad always produces a vlaue is woven through the 
+    whole implementation.
+  - We will see a solution to this problem "Monad Transformers".
+  - See what is invloved in solving it like this.
+
+- The "mgu" function also promises to succeed at all times.
+  - It's type promises that it will always give a subset.
+  - It breaks that promise when it calls "error".
+- Can we fix the type of "mgu" so that it instead reads: 
+  - mgu :: Type -> Type -> TI (Either String Subst)
+  - A promise to produce either a substitution or an error message.
+- Obviously in "ti" you will have to use "error" when "mgu" does not 
+  return a substitution, only a partial fix to the problem.
+  - Shows the challenge of changing such a fundamental design decision in 
+    the program.
+
+* Exercises:
+1. Redesign "mgu" as described, to eliminate the use of "error" in that function.
+2. Rewrite "App" equation of "ti" so that it can work with the new "mgu" implementation
+   - "ti will have to use error to deal with the case where "mgu" fails to produce a substitution, that's OK.
+3. Consider how much work would be involved in making the same change to "ti" so that it's type became 
+   - ti :: Typeenv -> Exp -> TI (Either String (Subst, Type))
+   - Sketch what the changes would look like. 
+     - Don't actually write the code.
+     - Just describe in text how the changes would propagate through the program
+       and how much work would be involved.
+   - What would be the design implications of returning a list of types (instead of an Either).
+     - Or trying to make State be and instance of MoandPlus (as described in the Monadic Parsing paper)

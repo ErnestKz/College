@@ -1,0 +1,77 @@
+* Week 6
+- Data is two columns of data.
+  - First column input feature.
+  - Second column is real-valued target.
+
+- In this assignment, a closer look at use of kernels with an SVM classifer
+  and with Ridge Regression (L2 penalty, takes the sum of squared parameters, and 
+  adds it on to the cost function)
+  - Using kernels changes these methods to be quite like the kNN method.
+
+** (i) 
+- To get more insight into kNN, start by using dummy training data:
+  - (-1,0), (0,1), (1,0)
+  - There is one input feature. 
+    - When it equals -1 or 1, the output is 0.
+    - When it equals 0 the output is 1.
+  - Using kNN and kernalised ridge regression, we'll generate predictions
+    on a grid of feature values that range from -3 to 3 (ie. extending beyond the training data)
+*** (a)
+- Use sklearn KNeighborsRegressor function to create KNN predictions for this data.
+   - Use Gaussian kernel to weight neighbours based on their distance from the input feature.
+     - Do this be setting weights parameter of KNeighborsRegressor function (lecture notes)
+- Using k = 3 (the number of trainig data points).
+  - Plot predictions as parameter gamma of the Gaussian kernel takes values:
+    - 0, 1, 5, 10, 25 
+*** (b)
+- With reference to how kNN model generates its predictions explain why the predictions
+  plotted in (a) change the way they do as gamma varies.
+  - When gamma = 25, predictions are close to 1 for all input feature values between -0.5 and 0.5
+    - Explain why. ( a gamma this high, in the middle of the data, makes it so that it's effectively 
+                     taking the average of all the data points, since k = 3, it considers all the 3 
+		     data points )
+*** (c)
+- Use sklearn KernelRidge function to train a kernalised ridge regression model on the data.
+  - Use Gaussian kernel ( kernel parameter of KernelRidge to 'rbf' )
+- KernelRidge uses a cost function that includes an L2 penalty.
+  - Therefore necessary to use a weight alpha = 1 / (2C) given to the penalty.
+
+- Plot predictions for the kernel parameter gamma equal to:
+  - 0, 1, 5, 10, 25
+- And for C values that span a wide range 
+  -0 .1, 1, 1000
+- Also report the dual_coef_ parameters from the KernelRidge
+  - These correspond to the trained parameters theta in the lecture notes on
+    kernel methods.
+
+*** (d)
+- With reference to how the kernalised ridge regression model generates its predictions,
+  - Explain why the predictions plotted in (c) change the way they do as gamma and C are varied.
+- Discuss how the value of the parameters theta affect the predictions.
+- Compare the behaviour of the kernalised ridge regression predictions with that of the 
+  kNN predicitions.
+
+
+** (ii)
+- Now repeat the analysis in (i) with the data that was downloaded.
+- Generate predictions on a grid of feature values that extends beyond the range 
+  of values in the dataset
+*** (a) 
+- For kNN model with Gaussian kernel weights.
+  - Plot predictions for k = #points in dataset as parameter gamma is varied.
+- Describe how the predicitions vary and explain why.
+- Predictions for feature values outside the range of the training data give some insight into
+  the generalisation behaviour of the kNN model.
+  - Explain the behaviour you observe in your plots.
+*** (b)
+- Now use the sklearn KernelRidge function to train a kernalised ridge regression model on this data.
+  - Again, use the Gaussian kernel.
+- Plot the predictions for a range of values of the kernel parameter gamma.
+- Discuss how the predictions change as you vary gamma.
+*** (c)
+- Use cross-validation to choose a reasonable value for the hyperparameter gamme for the kNN model.
+- Now use cross-validation to choose gamma and alpha hyperparameter for the kernalised
+  ridge regression model.
+- Generate predictions for both models using these "optimised" hyperparameterpp values.
+  - How do the predictions of the kNN and kernalised ridge regression change?
+    
