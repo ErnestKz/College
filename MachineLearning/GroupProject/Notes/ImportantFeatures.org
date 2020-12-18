@@ -1,0 +1,25 @@
+* Completed at least 10 trips OR completed 3 reservations that total at least 100 nights
+** Number of reservations
+** Number of nights 
+- Maximum_minimum_nights
+- minimum_maximum_nights
+- minimum_nights_avg_ntm
+- maximum_nights_avg_ntm
+* Maintained a 90% response rate or higher
+** Response rate
+- host_response_rate
+* Maintained a 1% percent cancellation rate exceptions made for those that fall under our Extenuating Circumstances policy
+** Cancellation rate
+- host_acceptance_rate
+* Maintained a 4.8 overall rating (this rating looks at the past 365 days of reviews, based on the date the guest left a review, not the date the guest checked out)*
+** Host rating (past 365 days of reviews)
+- review_scores_value
+- review_scores_accuracy
+- review_scores_cleanliness
+- review_scores_checkin
+
+
+- host_since
+- number_of_reviews
+- review_scores_rating
+- reviews_per_month
