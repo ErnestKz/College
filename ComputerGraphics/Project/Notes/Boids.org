@@ -1,0 +1,54 @@
+* Craig Reynolds 'Boids'
+- Distributed behavioral model
+
+- Three simple rules.
+
+** Perceptual system of an individual called a boid
+
+- Boids can percieve only their immediate neighbours.
+
+- Boid is modelled as an 'oriented particle'.
+
+** Simple sensory system
+
+- Boid can see certain amount ahead.
+- Aware of any flock mates within limits on either side.
+
+- Two parameters:
+  - Angle 
+  - Distance
+- Can only be influenced by other it can sense according to these parameters.
+
+** Rule 1 : Separation
+- Keep distance from the rest of the flock.
+  - Move away from neighbours that are too close.
+
+** Rule 2: Alignment
+- Fly the same direction as visible neighbours.
+
+** Rule 3: Cohesion
+- Don't want birds to fly too far apart.
+  - Localised flock centering tendency.
+  - Move towards the centroid of visible neighbours.
+
+
+** All Together
+- Sum the vectors obtained from idividual behaviours.
+  - Top priority: Collision avoidance (static objects)
+  - High priority: Collision avoidance (other boids)
+  - Moderate priority: Velocity matching (other boids)
+  - Moderate priority: Flock centering (other boids)
+
+
+** Programming
+- Define personal space range.
+  - For each boid in personal space, increment final angle such that vectors 
+    are further away from being parallel
+
+- For each neighbour, increment final angle change such that its closer
+  to being parallel
+
+- For each visible neighbour, calculate centroid of the nighbours
+  - Calculate 
+
+- Maybe just get the average direction of all the boids
