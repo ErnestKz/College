@@ -1,0 +1,20 @@
+* Project Presentation Video
+- 40% of the module mark.
+
+- 5 minute narrated video of Project Presentation
+- Using slides
+  1. Background
+  2. Aims
+  3. Methods
+  4. Results
+  5. Discussions/Conclusion
+
+- Project that was worked on as part second or 
+  third year studies in SCSS.
+
+- MP4 file.
+
+* Project
+
+- Use second year SWENG project.
+- NLP on twitter for natural disaster detection.

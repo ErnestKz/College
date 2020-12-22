@@ -1,0 +1,12 @@
+* Essay
+- 500 word essay that explains to a lay-person how 
+  Computer Science can perpetuate inequality and bias.
+
+- 3 academic references.
+
+* Things to do 
+- Learn how to search for literature.
+- Read the papers found.
+
+* Literature Search
+[[https://tcd.blackboard.com/webapps/blackboard/content/listContent.jsp?course_id=_63445_1&content_id=_1654169_1&mode=reset][Literature search video location.]]
