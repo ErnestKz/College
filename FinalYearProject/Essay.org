@@ -4,9 +4,104 @@
 
 - 3 academic references.
 
+
+* Essay Topic
+
+- Field of work that acquires a tool that accelarates productivity.
+- If there is a majority of one gender, then inequality will be perpetuated.
+
+- Does having disproporitonate ratio of gender in a field perpetuate the disproportion?
+
 * Things to do 
 - Learn how to search for literature.
 - Read the papers found.
 
 * Literature Search
 [[https://tcd.blackboard.com/webapps/blackboard/content/listContent.jsp?course_id=_63445_1&content_id=_1654169_1&mode=reset][Literature search video location.]]
+
+* Literature Review
+- Formal, reflective survey of the most significant and relevant works of 
+  published and peer-reviewed academic research on a particular topic, summarizing and 
+  discussing their findings and methodologies in order to reflect the current state of 
+  knowledge in the field and key questions raised.
+
+** Challenges 
+- Knowing how to start 
+  - Wide then narrow?
+  - Narrow then wide?
+- Knowing what to include/exclude.
+- Knowing when to stop literature searching.
+- Knowing how far to venture into the literature of asociated domains.
+
+** Start by defining research question.
+- What is the effect of global warming on the environment?
+  - Not well defined and too broad.
+- Why are social networking sites harmful?
+  - Assumptions.
+  - Doesn't specify which social sites.
+  - Harm is undefined.
+- How are online users experiencing or addressing privacy issues on such social 
+  networking sites as Twitter and Facebook?
+- How is glacial melting affecting penguins in Antartica?
+** What are the primary keywords/phrases in the topics?
+** What are the alternative keywords or synonymns?
+** A research question should be:
+- Specific
+- Focused 
+- Clearly formulated
+- Well defined (leaving no room for ambiguity)
+
+** Library Resources
+- Stalla Search and other catalogues
+- Quality assured databases
+- Institutional repositories
+- "Grey literature" (internal documents, reports, conference processings)
+- Theses
+** Stella Search
+- Works like a search engine.
+- Includes printed and electronic resources.
+- Most relevant results can be retrieved and then refined.
+- Gives direct links to PDFs (where available)
+- Stella Search does not index all our databases.
+* Literature Search 
+- Stella good starting point for finding some journals.
+- But need to know what the databases are and look through them one by one.
+
+** Search Strategy 
+- Controlled vocabulary
+  - Subject terms assigned to units of information by database indexers.
+- Part of the search you construct.
+
+- Controlled vocab retrieves all items indexed under a particular topic but can 
+  miss out on jargon, slang, newer terms and the very latest articles if subject terms
+  have not been assigned.
+
+- Keyword searching (in the Title/Abstract field) will pick up on jargon, slang, newer 
+  terms and the very latest articles.
+
+- To get best results, use a combination of the two. (where both options are available)
+
+** Boolean operators
+- AND given terms, all of them must exist in the search.
+- OR given terms, find if at least one exist.
+** Truncate search term
+- therap* = therapy; therapies; theraputic; ...
+** Phrase searching
+- "back pain" AND "back ache"
+
+(DE "Elementary Schools" OR TI ("primary school*" OR "elementary school*") OR AB 
+("primary school*" OR "elementary shcool*"))
+
+AND 
+
+(DE "Children" OR TI (child* OR teenager* OR adolescen* OR youth* ) OR AB (child* 
+OR teenager* OR adolescen* OR youth*))
+
+AND
+
+
+(DE "Bullying" OR TI (bully* OR bullie* OR torment* OR presecut* ) OR AB (bully* 
+OR bullie* OR torment* OR presecut*))
+
+** Library Website
+- Libray databases

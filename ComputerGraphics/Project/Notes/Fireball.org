@@ -1,0 +1,11 @@
+- Bumpy ball
+- Particles Coming off
+  - Small spheres
+  - Point light
+
+- Physics on the ball
+
+
+
+* Displacement Mapping
+- 3D array of vectors, but points to be shaded are displaced.

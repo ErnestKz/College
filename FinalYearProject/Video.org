@@ -18,3 +18,24 @@
 
 - Use second year SWENG project.
 - NLP on twitter for natural disaster detection.
+
+* Background
+- 2nd year SWENG project.
+- Together with 3rd years.
+- Presented with a list of projects.
+  - We voted on our top 5 and submitted it.
+- We got Using NLP techniques on social media to detect natrual disasters.
+
+* Aims
+- 2 main parts.
+- Being a cohesieve team.
+- Getting some form of the project done.
+
+* Methods
+- Weekly meetings.
+- Splitting up specific places of the work among people.
+
+* Results
+- Isolating team-members with specific tasks was not good for communication.
+- Not a very usable product.
+- Golden nugget of experience of how the dynamic played out.
