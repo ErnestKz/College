@@ -38,6 +38,11 @@ float world_time = 0.0f;
 
 glm::vec3 light_position_world = glm::vec3(0.0, 0.0, 2.0);
 
+bool next_state = true;
+
+// one second cooldown
+float next_state_cooldown = 0;
+
 unsigned int texture;
 
 // spider animate
@@ -166,122 +171,109 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0); 
 
-	 
+    
     // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window))
-      {
-        // per-frame time logic
-        // --------------------
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+    while (!glfwWindowShouldClose(window)) {
+      // per-frame time logic
+      float currentFrame = glfwGetTime();
+      deltaTime = currentFrame - lastFrame;
+      lastFrame = currentFrame;
+      world_time += deltaTime;
 
-	world_time += deltaTime;
-        // input
-        // -----
-        processInput(window);
+      next_state_cooldown = 0 > next_state_cooldown - deltaTime ? 0 : next_state_cooldown - deltaTime;
+      // input
+      processInput(window);
 
-        // render
-        // ------
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // don't forget to enable shader before setting uniforms
-
-        // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
-	spider_shader.use();
-        spider_shader.setMat4("projection", projection);
-        spider_shader.setMat4("view", view);
-
-	glm::vec3 view_position = camera.GetViewPosition();
-	spider_shader.setVec3("view_position", view_position);
-	spider_shader.setVec3("light_position", light_position_world);
-	crowd_iteration(crowd, spider_shader);
-	
-
-	ball_shader.use();
-	ball_shader.setMat4("projection", projection);
-        ball_shader.setMat4("view", view);
-
-	
-	glm::mat4 model = glm::mat4(1.0f);
-	
-
-	model = glm::translate(model, light_position_world);
-	model = glm::scale(model, glm::vec3(0.2f));
-	ball_model.hierarchy.setTransform("root", model);
-	ball_model.hierarchy.compileTransforms();
-	ball_model.Draw(ball_shader);
-	ball_model.hierarchy.resetTransforms();
-
-
-	plane_shader.use();
-	glBindTexture(GL_TEXTURE_2D, texture);
-	plane_shader.setVec3("view_position", view_position);
-	plane_shader.setVec3("light_position", light_position_world);
-	
-	plane_shader.setMat4("projection", projection);
-        plane_shader.setMat4("view", view);
-	plane_shader.setMat4("model",
-			     glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.24f, 0.0f)),
-					glm::vec3(10.0f, 10.0f, 10.0f)));
-					    
-
-	glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+      
+      if (next_state){
+      // render
+      glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // don't forget to enable shader before setting uniforms
+      glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+      glm::mat4 view = camera.GetViewMatrix();
+      spider_shader.use();
+      spider_shader.setMat4("projection", projection);
+      spider_shader.setMat4("view", view);
+      glm::vec3 view_position = camera.GetViewPosition();
+      spider_shader.setVec3("view_position", view_position);
+      spider_shader.setVec3("light_position", light_position_world);
+      crowd_iteration(crowd, spider_shader);
+      ball_shader.use();
+      ball_shader.setMat4("projection", projection);
+      ball_shader.setMat4("view", view);
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, light_position_world);
+      model = glm::scale(model, glm::vec3(0.2f));
+      ball_model.hierarchy.setTransform("root", model);
+      ball_model.hierarchy.compileTransforms();
+      ball_model.Draw(ball_shader);
+      ball_model.hierarchy.resetTransforms();
+      plane_shader.use();
+      glBindTexture(GL_TEXTURE_2D, texture);
+      plane_shader.setVec3("view_position", view_position);
+      plane_shader.setVec3("light_position", light_position_world);
+      plane_shader.setMat4("projection", projection);
+      plane_shader.setMat4("view", view);
+      plane_shader.setMat4("model",
+			   glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.24f, 0.0f)),
+				      glm::vec3(10.0f, 10.0f, 10.0f)));
+      glBindVertexArray(VAO);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      }
+      
+      
+      // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+      glfwSwapBuffers(window);
+      glfwPollEvents();
     }
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
 
+
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    camera.ProcessKeyboard(FORWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    camera.ProcessKeyboard(BACKWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    camera.ProcessKeyboard(LEFT, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    camera.ProcessKeyboard(RIGHT, deltaTime);
 
-    float speed = 0.1f;
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
-      light_position_world.z = light_position_world.z - speed;
-      light_position_world.z = light_position_world.z - speed;
-    }      
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
-      light_position_world.z = light_position_world.z + speed;
-      light_position_world.z = light_position_world.z + speed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
-      light_position_world.x = light_position_world.x - speed;
-      light_position_world.x = light_position_world.x - speed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
-      light_position_world.x = light_position_world.x + speed;
-      light_position_world.x = light_position_world.x + speed;
-    }
+  if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && next_state_cooldown == 0) { 
+    next_state = !next_state;
+    next_state_cooldown = 0.1;
+    cout << "PAUSE/PLAY" << endl;
+  }
+  float speed = 0.1f;
+  if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
+    light_position_world.z = light_position_world.z - speed;
+    light_position_world.z = light_position_world.z - speed;
+  }      
+  if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+    light_position_world.z = light_position_world.z + speed;
+    light_position_world.z = light_position_world.z + speed;
+  }
+  if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+    light_position_world.x = light_position_world.x - speed;
+    light_position_world.x = light_position_world.x - speed;
+  }
+  if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
+    light_position_world.x = light_position_world.x + speed;
+    light_position_world.x = light_position_world.x + speed;
+  }
 
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
@@ -290,7 +282,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 // glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -328,6 +319,19 @@ void spiderAnimate(MeshHierarchy &model_hierarchy){
 void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
   for (int i = 0; i < crowd.size(); i++){
     auto& spider_model = crowd[i];
+
+
+    for (int j = 0; j < crowd.size(); j++){
+      if (i != j) {
+	auto& other_spider = crowd[j];
+	//	sum_dist += glm::distance(spider_model.pos, other_spider.pos);
+	if (glm::distance(spider_model.pos, other_spider.pos) < 2){
+	  cout << "Spider" << i << " is in vicinity of Spider " << j << endl;
+	}
+      }
+    }
+
+    
     float rotation = i % 2 == 0 ? -0.01 : 0.01;
     spider_model.Rotate(rotation * (1 + i));
     spider_model.MoveForward(4 * ((i+1) * 0.8));

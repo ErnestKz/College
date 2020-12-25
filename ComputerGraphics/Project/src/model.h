@@ -41,7 +41,7 @@ public:
     
   MeshHierarchy hierarchy;
   float forward_direction_rad = 3.14;
-
+  glm::vec2 pos;
 
   // constructor, expects a filepath to a 3D model.
   Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
@@ -65,15 +65,12 @@ public:
     }
   }
 
-  void UpdatePosition(float world_time)
-  {
-    
-  }
-
   void MoveForward(float distance)
   {
     float x = cos(forward_direction_rad);
     float z = sin(forward_direction_rad);
+
+    pos += glm::vec2( x * distance, z * distance);
     
     glm::mat4 model_matrix = glm::mat4(1.0f);
     glm::vec3 translation_vector(distance * x, 0.0f, distance * z);
@@ -85,9 +82,11 @@ public:
   void Rotate(float rad)
   {
     glm::mat4 model_matrix = glm::mat4(1.0f);
+
+    forward_direction_rad += rad;
+    
     model_matrix = glm::rotate(model_matrix, -rad, glm::vec3(0.0, 1.0, 0.0));
     hierarchy.setRotation("root", model_matrix);
-    forward_direction_rad += rad;
   }
   
 private:
