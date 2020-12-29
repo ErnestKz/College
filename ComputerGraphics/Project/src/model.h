@@ -65,6 +65,8 @@ public:
     }
   }
 
+  
+  // ---------------- -------------- -------------- this is deprecated  
   void MoveForward(float distance)
   {
     float x = cos(forward_direction_rad);
@@ -88,7 +90,7 @@ public:
     model_matrix = glm::rotate(model_matrix, -rad, glm::vec3(0.0, 1.0, 0.0));
     hierarchy.setRotation("root", model_matrix);
   }
-  
+  // ------------------ ------------------ ----------------------------------   
 private:
 
  

@@ -29,7 +29,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-
+   
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -109,7 +109,7 @@ int main()
       Model spider_model(modelPath, modelHierarchyPath, true);
       glm::mat4 initial_position = glm::translate(model, glm::vec3(0.0f, 0.0f, i * 400.0f - 600.0f));
       spider_model.hierarchy.setTransform("root", initial_position);
-      spider_model.hierarchy.compileTransforms();
+      spider model.hierarchy.compileTransforms();
       spider_model.hierarchy.resetParents();
       crowd.push_back(spider_model);
     }
@@ -199,6 +199,7 @@ int main()
       spider_shader.setVec3("view_position", view_position);
       spider_shader.setVec3("light_position", light_position_world);
       crowd_iteration(crowd, spider_shader);
+      
       ball_shader.use();
       ball_shader.setMat4("projection", projection);
       ball_shader.setMat4("view", view);
@@ -209,6 +210,7 @@ int main()
       ball_model.hierarchy.compileTransforms();
       ball_model.Draw(ball_shader);
       ball_model.hierarchy.resetTransforms();
+      
       plane_shader.use();
       glBindTexture(GL_TEXTURE_2D, texture);
       plane_shader.setVec3("view_position", view_position);
@@ -221,8 +223,7 @@ int main()
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       }
-      
-      
+
       // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
       glfwSwapBuffers(window);
       glfwPollEvents();
