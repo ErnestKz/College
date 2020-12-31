@@ -15,6 +15,7 @@
 #include <mesh.h>
 #include <mesh_hierarchy.h>
 #include <shader.h>
+#include <hitbox.h>
 
 #include <string>
 #include <fstream>
@@ -42,7 +43,7 @@ public:
   MeshHierarchy hierarchy;
   float forward_direction_rad = 3.14;
   glm::vec2 pos;
-
+  
   // constructor, expects a filepath to a 3D model.
   Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
   {
@@ -65,6 +66,9 @@ public:
     }
   }
 
+  void draw_hitbox(Shader &shader) {
+    
+  }
   
   // ---------------- -------------- -------------- this is deprecated  
   void MoveForward(float distance)

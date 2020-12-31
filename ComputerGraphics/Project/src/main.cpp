@@ -48,6 +48,7 @@ unsigned int texture;
 // spider animate
 void spiderAnimate(MeshHierarchy&);
 void crowd_iteration(vector<Model>&, Shader&);
+void draw_crowd(vector<Model>&, Shader&);
 int main()
 {
     // glfw: initialize and configure
@@ -109,9 +110,11 @@ int main()
       Model spider_model(modelPath, modelHierarchyPath, true);
       glm::mat4 initial_position = glm::translate(model, glm::vec3(0.0f, 0.0f, i * 400.0f - 600.0f));
       spider_model.hierarchy.setTransform("root", initial_position);
-      spider model.hierarchy.compileTransforms();
+      spider_model.hierarchy.compileTransforms();
       spider_model.hierarchy.resetParents();
       crowd.push_back(spider_model);
+      // this is me doing some work
+      // some other super epic work  
     }
     
     Shader plane_shader("../shaders/shader.vert", "../shaders/shader.frag");
@@ -185,8 +188,6 @@ int main()
       processInput(window);
 
       
-      if (next_state){
-      // render
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       // don't forget to enable shader before setting uniforms
@@ -198,7 +199,11 @@ int main()
       glm::vec3 view_position = camera.GetViewPosition();
       spider_shader.setVec3("view_position", view_position);
       spider_shader.setVec3("light_position", light_position_world);
-      crowd_iteration(crowd, spider_shader);
+
+      if (next_state){
+	crowd_iteration(crowd, spider_shader);
+      }
+      draw_crowd(crowd, spider_shader);
       
       ball_shader.use();
       ball_shader.setMat4("projection", projection);
@@ -222,7 +227,6 @@ int main()
 				      glm::vec3(10.0f, 10.0f, 10.0f)));
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-      }
 
       // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
       glfwSwapBuffers(window);
@@ -327,27 +331,21 @@ void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
 	auto& other_spider = crowd[j];
 	//	sum_dist += glm::distance(spider_model.pos, other_spider.pos);
 	if (glm::distance(spider_model.pos, other_spider.pos) < 2){
-	  cout << "Spider" << i << " is in vicinity of Spider " << j << endl;
+	  
 	}
       }
     }
-
-    
     float rotation = i % 2 == 0 ? -0.01 : 0.01;
     spider_model.Rotate(rotation * (1 + i));
     spider_model.MoveForward(4 * ((i+1) * 0.8));
     spiderAnimate(spider_model.hierarchy);
     spider_model.hierarchy.compileTransforms();
     spider_model.hierarchy.resetParents();
-    spider_model.Draw(spider_shader);
   }
-  
-  // for (auto& spider_model : crowd){
-  //   spider_model.Rotate(0.01);
-  //   spider_model.MoveForward(4);
-  //   spiderAnimate(spider_model.hierarchy);
-  //   spider_model.hierarchy.compileTransforms();
-  //   spider_model.hierarchy.resetParents();
-  //   spider_model.Draw(spider_shader);
-  // }
+}
+
+void draw_crowd(vector<Model>& crowd, Shader& spider_shader) {
+  for (auto& spider : crowd) {
+    spider.Draw(spider_shader);
+  }
 }
