@@ -20,39 +20,27 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-// settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-// camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
    
-// timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
 float world_time = 0.0f;
-
 glm::vec3 light_position_world = glm::vec3(0.0, 0.0, 2.0);
-
 bool next_state = true;
-
-// one second cooldown
 float next_state_cooldown = 0;
-
 unsigned int texture;
 
-// spider animate
-void spiderAnimate(MeshHierarchy&);
+void animate_spider(MeshHierarchy&);
 void crowd_iteration(vector<Model>&, Shader&);
 void draw_crowd(vector<Model>&, Shader&);
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -61,9 +49,6 @@ int main()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
-    // glfw window creation
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Computer Graphics", NULL, NULL);
     if (window == NULL)
     {
@@ -75,52 +60,31 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
-
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);
-
-    // configure global opengl state
-    // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // build and compile shaders
-    // -------------------------
-
     vector<Model> crowd;
-    int crowd_size = 4;
+    int crowd_size = 8;
     Shader spider_shader("../shaders/light.vert", "../shaders/light.frag");
     char modelPath[] = "../models/spider.obj";
     char modelHierarchyPath[] = "../models/spider.json";
-    glm::mat4 model = glm::mat4(1.0f);
-    auto scaleMatrix = glm::vec3(0.01f, 0.01f, 0.01f);
-    model = glm::scale(model, scaleMatrix);
-    
+
     for (int i = 0; i < crowd_size; ++i){
       Model spider_model(modelPath, modelHierarchyPath, true);
-      glm::mat4 initial_position = glm::translate(model, glm::vec3(0.0f, 0.0f, i * 400.0f - 600.0f));
-      spider_model.hierarchy.setTransform("root", initial_position);
-      spider_model.hierarchy.compileTransforms();
-      spider_model.hierarchy.resetParents();
+      spider_model.pos = glm::vec2(0, i * 1.5f);
       crowd.push_back(spider_model);
-      // this is me doing some work
-      // some other super epic work  
     }
     
     Shader plane_shader("../shaders/shader.vert", "../shaders/shader.frag");
     Model ball_model("../models/ball.dae");
     Shader ball_shader("../shaders/ball.vert", "../shaders/ball.frag");
-
     
     float vertices[] = {
       -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,   // bottom left
@@ -139,63 +103,46 @@ int main()
     if (data) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
-    } else
-      std::cout << "Failed to load texture" << std::endl;
+    } else std::cout << "Failed to load texture" << std::endl;
     
     stbi_image_free(data);
-    
-    unsigned int indices[] = {  
-      0,1,2,3,1,2
-			      
-    };
+    unsigned int indices[] = { 0,1,2,3,1,2 };
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-    
     glBindVertexArray(VAO);
-    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
     glEnableVertexAttribArray(0);
-
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-
-    
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0); 
 
     
-    // render loop
     while (!glfwWindowShouldClose(window)) {
-      // per-frame time logic
       float currentFrame = glfwGetTime();
       deltaTime = currentFrame - lastFrame;
       lastFrame = currentFrame;
       world_time += deltaTime;
-
       next_state_cooldown = 0 > next_state_cooldown - deltaTime ? 0 : next_state_cooldown - deltaTime;
-      // input
       processInput(window);
-
       
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      // don't forget to enable shader before setting uniforms
+      // camera uniforms 
       glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
       glm::mat4 view = camera.GetViewMatrix();
       spider_shader.use();
       spider_shader.setMat4("projection", projection);
       spider_shader.setMat4("view", view);
+      // light uniforms
       glm::vec3 view_position = camera.GetViewPosition();
       spider_shader.setVec3("view_position", view_position);
       spider_shader.setVec3("light_position", light_position_world);
@@ -309,7 +256,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(yoffset);
 }
 
-void spiderAnimate(MeshHierarchy &model_hierarchy){
+void animate_spider(MeshHierarchy &model_hierarchy){
   glm::mat4 legs1_model = glm::mat4(1.0f);
   legs1_model = glm::rotate(legs1_model, sin(world_time * 20) * 0.05f, glm::vec3(0.0, 1.0, 0.0));
   model_hierarchy.addRotation("set1", legs1_model);
@@ -324,28 +271,35 @@ void spiderAnimate(MeshHierarchy &model_hierarchy){
 void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
   for (int i = 0; i < crowd.size(); i++){
     auto& spider_model = crowd[i];
-
-
-    for (int j = 0; j < crowd.size(); j++){
-      if (i != j) {
-	auto& other_spider = crowd[j];
-	//	sum_dist += glm::distance(spider_model.pos, other_spider.pos);
-	if (glm::distance(spider_model.pos, other_spider.pos) < 2){
-	  
-	}
-      }
-    }
-    float rotation = i % 2 == 0 ? -0.01 : 0.01;
-    spider_model.Rotate(rotation * (1 + i));
-    spider_model.MoveForward(4 * ((i+1) * 0.8));
-    spiderAnimate(spider_model.hierarchy);
-    spider_model.hierarchy.compileTransforms();
-    spider_model.hierarchy.resetParents();
+    // for (int j = 0; j < crowd.size(); j++){
+    //   if (i != j) {
+    // 	auto& other_spider = crowd[j];
+    // 	//	sum_dist += glm::distance(spider_model.pos, other_spider.pos);
+    // 	if (glm::distance(spider_model.pos, other_spider.pos) < 2){
+    // 	}
+    //   }
+    // }
+    // float rotation = i % 2 == 0 ? -0.01 : 0.01;
+    spider_model.rotate(0.01);
+    // spider_model.rotate(rotation * (1 + i));
+    spider_model.move_forward(0.07);
+    animate_spider(spider_model.hierarchy);
   }
 }
 
 void draw_crowd(vector<Model>& crowd, Shader& spider_shader) {
+  auto model = glm::mat4(1.0f);
+  auto scale_matrix = glm::vec3(0.01f, 0.01f, 0.01f);
+  // auto  normalised_model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  // auto normalised_model = glm::scale(model, scale_matrix);
   for (auto& spider : crowd) {
+    // the order of these transformations are backwards!!!! 
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(-spider.pos.x, 0, -spider.pos.y));
+    model = glm::rotate(model, -spider.forward_direction_rad, glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, scale_matrix);
+    spider.hierarchy.setTransform("root", model); 
+    spider.hierarchy.compileTransforms();
     spider.Draw(spider_shader);
+    spider.hierarchy.resetTransforms();
   }
 }

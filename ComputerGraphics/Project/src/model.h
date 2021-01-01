@@ -15,7 +15,6 @@
 #include <mesh.h>
 #include <mesh_hierarchy.h>
 #include <shader.h>
-#include <hitbox.h>
 
 #include <string>
 #include <fstream>
@@ -58,8 +57,7 @@ public:
   }
 
   // draws the model, and thus all its meshes
-  void Draw(Shader &shader)
-  {
+  void Draw(Shader &shader) {
     for(unsigned int i = 0; i < meshes.size(); i++){
       shader.setMat4("model", hierarchy.getModelMatrix(meshes[i].name));
       meshes[i].Draw(shader);
@@ -70,34 +68,19 @@ public:
     
   }
   
-  // ---------------- -------------- -------------- this is deprecated  
-  void MoveForward(float distance)
-  {
-    float x = cos(forward_direction_rad);
-    float z = sin(forward_direction_rad);
-
-    pos += glm::vec2( x * distance, z * distance);
-    
-    glm::mat4 model_matrix = glm::mat4(1.0f);
-    glm::vec3 translation_vector(distance * x, 0.0f, distance * z);
-    model_matrix = glm::translate(model_matrix, translation_vector);
-    hierarchy.setTransform("root", model_matrix);
-
+  void move_forward(float distance) {
+    float x = cos(forward_direction_rad) * distance;
+    float z = sin(forward_direction_rad) * distance;
+    pos.x = pos.x + x;
+    pos.y = pos.y + z;
   }
 
-  void Rotate(float rad)
-  {
-    glm::mat4 model_matrix = glm::mat4(1.0f);
-
+  void rotate(float rad) {
     forward_direction_rad += rad;
-    
-    model_matrix = glm::rotate(model_matrix, -rad, glm::vec3(0.0, 1.0, 0.0));
-    hierarchy.setRotation("root", model_matrix);
   }
-  // ------------------ ------------------ ----------------------------------   
-private:
 
- 
+  
+private:
   // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
   void loadModel(string const &path)
   {
