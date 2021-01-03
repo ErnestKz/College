@@ -330,6 +330,19 @@ void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
 
 
 
+bool camera_intersects_sphere(glm::vec3 cam_pos, glm::vec3 sphere_pos, glm::vec3 cam_direction) {
+  float b = 2 * cam_direction.x * (cam_pos.x - sphere_pos.x) +
+    2 * cam_direction.z * (cam_pos.z - sphere_pos.z) +
+    2 * cam_direction.y * (cam_pos.y - sphere_pos.y);
+  float c = (cam_pos.x - sphere_pos.x) * (cam_pos.x - sphere_pos.x) +
+    (cam_pos.y - sphere_pos.y) * (cam_pos.y - sphere_pos.y) +
+    (cam_pos.z - sphere_pos.z) * (cam_pos.z - sphere_pos.z) - 1;
+
+  float d = b * b - 4 * c;
+  return d >= 0;
+}
+
+
 void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader& sphere_shader) {
   auto model = glm::mat4(1.0f);
   auto scale_matrix = glm::vec3(0.01f, 0.01f, 0.01f);
@@ -350,16 +363,20 @@ void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader
     spider.Draw(spider_shader);
     spider.hierarchy.resetTransforms();
     
+    bool intersected = camera_intersects_sphere(cam.Position,glm::vec3(-spider.pos.x, 0, -spider.pos.y),cam.Front);
+    
     if (draw_hitbox) {
       sphere_shader.use();
       sphere_shader.setMat4("projection", projection);
       sphere_shader.setMat4("view", view);
       sphere_shader.setMat4("model", translation);
       glBindVertexArray(vao_sphere);
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      if (!intersected)
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       glDrawArrays(GL_TRIANGLES, 0, 128 * 3);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
   }
 }
+
 
