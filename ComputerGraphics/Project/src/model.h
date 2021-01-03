@@ -38,11 +38,10 @@ public:
   string directory;
   bool gammaCorrection;
 
-    
+  // Hitbox hitbox;
   MeshHierarchy hierarchy;
   float forward_direction_rad = 3.14;
   glm::vec2 pos;
-  
   // constructor, expects a filepath to a 3D model.
   Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
   {
@@ -62,10 +61,6 @@ public:
       shader.setMat4("model", hierarchy.getModelMatrix(meshes[i].name));
       meshes[i].Draw(shader);
     }
-  }
-
-  void draw_hitbox(Shader &shader) {
-    
   }
   
   void move_forward(float distance) {

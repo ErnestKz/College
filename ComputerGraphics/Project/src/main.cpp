@@ -8,12 +8,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <iostream>
+#include <math.h>
+
 #include <shader.h>
 #include <camera.h>
 #include <model.h>
 
-#include <iostream>
-#include <math.h>
+#include <sstream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -33,12 +35,18 @@ float lastFrame = 0.0f;
 float world_time = 0.0f;
 glm::vec3 light_position_world = glm::vec3(0.0, 0.0, 2.0);
 bool next_state = true;
+bool draw_hitbox = true;
 float next_state_cooldown = 0;
+float hitbox_cooldown = 0;
 unsigned int texture;
 
 void animate_spider(MeshHierarchy&);
 void crowd_iteration(vector<Model>&, Shader&);
-void draw_crowd(vector<Model>&, Shader&);
+void draw_crowd(vector<Model>&, Shader&, Camera&,Shader&);
+
+unsigned int vbo_sphere, vao_sphere;
+vector<float> sphere_vertices;
+
 int main()
 {
     glfwInit();
@@ -69,18 +77,45 @@ int main()
     }
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
+    
+    Shader sphere_shader = Shader("../shaders/ball.vert", "../shaders/ball.frag");
+
+
+    ifstream in("../sphere.txt");
+    std::string line;
+    while (std::getline(in, line)) {
+      std::istringstream iss(line);
+      float a, b, c;
+      if ((iss >> a >> b >> c)) {
+	sphere_vertices.push_back(a);
+	sphere_vertices.push_back(b);
+	sphere_vertices.push_back(c);
+      }
+    }
+    
+    glGenVertexArrays(1, &vao_sphere);
+    glGenBuffers(1, &vbo_sphere);
+    glBindVertexArray(vao_sphere);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_sphere);
+    glBufferData(GL_ARRAY_BUFFER, sphere_vertices.size() * sizeof(float), &sphere_vertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,(void*) 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    glBindVertexArray(0); 
+
 
     vector<Model> crowd;
-    int crowd_size = 8;
+    int crowd_size = 4;
     Shader spider_shader("../shaders/light.vert", "../shaders/light.frag");
     char modelPath[] = "../models/spider.obj";
     char modelHierarchyPath[] = "../models/spider.json";
 
     for (int i = 0; i < crowd_size; ++i){
       Model spider_model(modelPath, modelHierarchyPath, true);
-      spider_model.pos = glm::vec2(0, i * 1.5f);
+      spider_model.pos = glm::vec2(0, i * 4.0f);
       crowd.push_back(spider_model);
     }
+
     
     Shader plane_shader("../shaders/shader.vert", "../shaders/shader.frag");
     Model ball_model("../models/ball.dae");
@@ -132,6 +167,7 @@ int main()
       lastFrame = currentFrame;
       world_time += deltaTime;
       next_state_cooldown = 0 > next_state_cooldown - deltaTime ? 0 : next_state_cooldown - deltaTime;
+      hitbox_cooldown = 0 > hitbox_cooldown - deltaTime ? 0 : hitbox_cooldown - deltaTime;
       processInput(window);
       
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
@@ -150,7 +186,7 @@ int main()
       if (next_state){
 	crowd_iteration(crowd, spider_shader);
       }
-      draw_crowd(crowd, spider_shader);
+      draw_crowd(crowd, spider_shader,camera, sphere_shader);
       
       ball_shader.use();
       ball_shader.setMat4("projection", projection);
@@ -205,6 +241,11 @@ void processInput(GLFWwindow *window)
     next_state_cooldown = 0.1;
     cout << "PAUSE/PLAY" << endl;
   }
+  if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && hitbox_cooldown == 0) { 
+    draw_hitbox = !draw_hitbox;
+    hitbox_cooldown = 0.1;
+  }
+  
   float speed = 0.1f;
   if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
     light_position_world.z = light_position_world.z - speed;
@@ -279,27 +320,46 @@ void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
     // 	}
     //   }
     // }
-    // float rotation = i % 2 == 0 ? -0.01 : 0.01;
-    spider_model.rotate(0.01);
-    // spider_model.rotate(rotation * (1 + i));
-    spider_model.move_forward(0.07);
+    float rotation = i % 2 == 0 ? -0.01 : 0.01;
+    spider_model.rotate(rotation * (i + 1));
+    spider_model.move_forward(0.055 * i + 0.01);
     animate_spider(spider_model.hierarchy);
   }
+
 }
 
-void draw_crowd(vector<Model>& crowd, Shader& spider_shader) {
+
+
+void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader& sphere_shader) {
   auto model = glm::mat4(1.0f);
   auto scale_matrix = glm::vec3(0.01f, 0.01f, 0.01f);
-  // auto  normalised_model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+  glm::mat4 view = cam.GetViewMatrix();
+
   // auto normalised_model = glm::scale(model, scale_matrix);
   for (auto& spider : crowd) {
     // the order of these transformations are backwards!!!! 
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(-spider.pos.x, 0, -spider.pos.y));
-    model = glm::rotate(model, -spider.forward_direction_rad, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto translation = glm::translate(glm::mat4(1.0f), glm::vec3(-spider.pos.x, 0, -spider.pos.y));
+    model = glm::rotate(translation, -spider.forward_direction_rad, glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, scale_matrix);
     spider.hierarchy.setTransform("root", model); 
     spider.hierarchy.compileTransforms();
+    spider_shader.use();
+    spider_shader.setMat4("projection", projection);
+    spider_shader.setMat4("view", view);
     spider.Draw(spider_shader);
     spider.hierarchy.resetTransforms();
+    
+    if (draw_hitbox) {
+      sphere_shader.use();
+      sphere_shader.setMat4("projection", projection);
+      sphere_shader.setMat4("view", view);
+      sphere_shader.setMat4("model", translation);
+      glBindVertexArray(vao_sphere);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      glDrawArrays(GL_TRIANGLES, 0, 128 * 3);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
   }
 }
+
