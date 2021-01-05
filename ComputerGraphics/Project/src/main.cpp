@@ -40,6 +40,9 @@ float next_state_cooldown = 0;
 float hitbox_cooldown = 0;
 unsigned int texture;
 
+int aiming_at = -1;
+bool aiming_lock = false;
+
 void animate_spider(MeshHierarchy&);
 void crowd_iteration(vector<Model>&, Shader&);
 void draw_crowd(vector<Model>&, Shader&, Camera&,Shader&);
@@ -235,7 +238,11 @@ void processInput(GLFWwindow *window)
     camera.ProcessKeyboard(LEFT, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.ProcessKeyboard(RIGHT, deltaTime);
-
+  
+  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+    if (aiming_at != -1)
+      aiming_lock = !aiming_lock;
+  
   if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && next_state_cooldown == 0) { 
     next_state = !next_state;
     next_state_cooldown = 0.1;
@@ -245,6 +252,8 @@ void processInput(GLFWwindow *window)
     draw_hitbox = !draw_hitbox;
     hitbox_cooldown = 0.1;
   }
+
+  // keys to rotate, move spider forward and backward
   
   float speed = 0.1f;
   if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
@@ -350,7 +359,8 @@ void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader
   glm::mat4 view = cam.GetViewMatrix();
 
   // auto normalised_model = glm::scale(model, scale_matrix);
-  for (auto& spider : crowd) {
+  for ( int i = 0; i < crowd.size(); ++i) {
+    auto& spider = crowd[i];
     // the order of these transformations are backwards!!!! 
     auto translation = glm::translate(glm::mat4(1.0f), glm::vec3(-spider.pos.x, 0, -spider.pos.y));
     model = glm::rotate(translation, -spider.forward_direction_rad, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -371,7 +381,11 @@ void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader
       sphere_shader.setMat4("view", view);
       sphere_shader.setMat4("model", translation);
       glBindVertexArray(vao_sphere);
-      if (!intersected)
+      if (intersected && !aiming_lock)
+	aiming_at = i;
+      
+      
+      if (aiming_at == i)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       glDrawArrays(GL_TRIANGLES, 0, 128 * 3);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
