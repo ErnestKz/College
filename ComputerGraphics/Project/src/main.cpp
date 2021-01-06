@@ -20,10 +20,10 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, vector<Model>& crowd);
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 1200;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -37,6 +37,7 @@ glm::vec3 light_position_world = glm::vec3(0.0, 0.0, 2.0);
 bool next_state = true;
 bool draw_hitbox = true;
 float next_state_cooldown = 0;
+float select_cooldown = 0;
 float hitbox_cooldown = 0;
 unsigned int texture;
 
@@ -106,19 +107,16 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0); 
 
-
     vector<Model> crowd;
     int crowd_size = 4;
     Shader spider_shader("../shaders/light.vert", "../shaders/light.frag");
     char modelPath[] = "../models/spider.obj";
     char modelHierarchyPath[] = "../models/spider.json";
-
     for (int i = 0; i < crowd_size; ++i){
       Model spider_model(modelPath, modelHierarchyPath, true);
       spider_model.pos = glm::vec2(0, i * 4.0f);
       crowd.push_back(spider_model);
     }
-
     
     Shader plane_shader("../shaders/shader.vert", "../shaders/shader.frag");
     Model ball_model("../models/ball.dae");
@@ -171,8 +169,9 @@ int main()
       world_time += deltaTime;
       next_state_cooldown = 0 > next_state_cooldown - deltaTime ? 0 : next_state_cooldown - deltaTime;
       hitbox_cooldown = 0 > hitbox_cooldown - deltaTime ? 0 : hitbox_cooldown - deltaTime;
-      processInput(window);
-      
+      select_cooldown = 0 > select_cooldown - deltaTime ? 0 : select_cooldown - deltaTime;
+      processInput(window, crowd);
+     
       glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       // camera uniforms 
@@ -192,6 +191,7 @@ int main()
       draw_crowd(crowd, spider_shader,camera, sphere_shader);
       
       ball_shader.use();
+      ball_shader.setVec3("ball_colour", glm::vec3(0.8, 0.8, 0.3));
       ball_shader.setMat4("projection", projection);
       ball_shader.setMat4("view", view);
       glm::mat4 model = glm::mat4(1.0f);
@@ -226,7 +226,7 @@ int main()
 
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, vector<Model>& crowd)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
@@ -239,14 +239,36 @@ void processInput(GLFWwindow *window)
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.ProcessKeyboard(RIGHT, deltaTime);
   
-  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-    if (aiming_at != -1)
+  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && select_cooldown == 0)
+    if (aiming_at != -1){
       aiming_lock = !aiming_lock;
+      select_cooldown = 0.4;
+    }
+
+  if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && aiming_lock == true) {
+    crowd[aiming_at].move_forward(0.1);
+  }
+
+  if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && aiming_lock == true) {
+    cout << "Spider: " << aiming_at << " -- x: " << crowd[aiming_at].pos.x << " z: " << crowd[aiming_at].pos.y << endl;
+  }
+
   
+  if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && aiming_lock == true) {
+    crowd[aiming_at].move_forward(-0.1);
+  }
+
+  if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS && aiming_lock == true) {
+    crowd[aiming_at].rotate(0.1);
+  }
+  
+  if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && aiming_lock == true) {
+    crowd[aiming_at].rotate(-0.1);
+  }
+
   if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && next_state_cooldown == 0) { 
     next_state = !next_state;
     next_state_cooldown = 0.1;
-    cout << "PAUSE/PLAY" << endl;
   }
   if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && hitbox_cooldown == 0) { 
     draw_hitbox = !draw_hitbox;
@@ -308,36 +330,23 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void animate_spider(MeshHierarchy &model_hierarchy){
   glm::mat4 legs1_model = glm::mat4(1.0f);
-  legs1_model = glm::rotate(legs1_model, sin(world_time * 20) * 0.05f, glm::vec3(0.0, 1.0, 0.0));
+  legs1_model = glm::rotate(legs1_model, sin(world_time * 10) * 0.2f, glm::vec3(0.0, 1.0, 0.0));
   model_hierarchy.addRotation("set1", legs1_model);
     
   glm::mat4 legs2_model = glm::mat4(1.0f);
-  legs2_model = glm::rotate(legs2_model, cos(world_time * 20) * 0.05f, glm::vec3(0.0, 1.0, 0.0));
+  legs2_model = glm::rotate(legs2_model, cos(world_time * 10) * 0.2f, glm::vec3(0.0, 1.0, 0.0));
   model_hierarchy.addRotation("set2", legs2_model);    
 }
-
-
 
 void crowd_iteration(vector<Model>& crowd, Shader& spider_shader) {
   for (int i = 0; i < crowd.size(); i++){
     auto& spider_model = crowd[i];
-    // for (int j = 0; j < crowd.size(); j++){
-    //   if (i != j) {
-    // 	auto& other_spider = crowd[j];
-    // 	//	sum_dist += glm::distance(spider_model.pos, other_spider.pos);
-    // 	if (glm::distance(spider_model.pos, other_spider.pos) < 2){
-    // 	}
-    //   }
-    // }
     float rotation = i % 2 == 0 ? -0.01 : 0.01;
     spider_model.rotate(rotation * (i + 1));
     spider_model.move_forward(0.055 * i + 0.01);
     animate_spider(spider_model.hierarchy);
   }
-
 }
-
-
 
 bool camera_intersects_sphere(glm::vec3 cam_pos, glm::vec3 sphere_pos, glm::vec3 cam_direction) {
   float b = 2 * cam_direction.x * (cam_pos.x - sphere_pos.x) +
@@ -351,17 +360,14 @@ bool camera_intersects_sphere(glm::vec3 cam_pos, glm::vec3 sphere_pos, glm::vec3
   return d >= 0;
 }
 
-
 void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader& sphere_shader) {
   auto model = glm::mat4(1.0f);
   auto scale_matrix = glm::vec3(0.01f, 0.01f, 0.01f);
   glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
   glm::mat4 view = cam.GetViewMatrix();
 
-  // auto normalised_model = glm::scale(model, scale_matrix);
   for ( int i = 0; i < crowd.size(); ++i) {
     auto& spider = crowd[i];
-    // the order of these transformations are backwards!!!! 
     auto translation = glm::translate(glm::mat4(1.0f), glm::vec3(-spider.pos.x, 0, -spider.pos.y));
     model = glm::rotate(translation, -spider.forward_direction_rad, glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, scale_matrix);
@@ -374,19 +380,20 @@ void draw_crowd(vector<Model>& crowd, Shader& spider_shader, Camera& cam, Shader
     spider.hierarchy.resetTransforms();
     
     bool intersected = camera_intersects_sphere(cam.Position,glm::vec3(-spider.pos.x, 0, -spider.pos.y),cam.Front);
-    
     if (draw_hitbox) {
       sphere_shader.use();
+      sphere_shader.setVec3("ball_colour", glm::vec3(0.8, 0.8, 0.3));
       sphere_shader.setMat4("projection", projection);
       sphere_shader.setMat4("view", view);
       sphere_shader.setMat4("model", translation);
       glBindVertexArray(vao_sphere);
-      if (intersected && !aiming_lock)
+      if (intersected && !aiming_lock) 
 	aiming_at = i;
-      
-      
       if (aiming_at == i)
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	sphere_shader.setVec3("ball_colour", glm::vec3(0.3, 0.8, 0.3));
+      if (aiming_at == i && aiming_lock)
+	sphere_shader.setVec3("ball_colour", glm::vec3(0.9, 0.2, 0.0));
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       glDrawArrays(GL_TRIANGLES, 0, 128 * 3);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }

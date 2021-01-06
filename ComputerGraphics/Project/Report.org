@@ -1,9 +1,0 @@
-- Crowd
-- Light 
-- Texutres
-- Mapped ground
-- Pause/Play
-- Show hitbox
-- Abilty to aim at hitbox
-- Ability to select spider
-- Ability to move spider around

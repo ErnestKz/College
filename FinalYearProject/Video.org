@@ -25,16 +25,18 @@
 - Presented with a list of projects.
   - We voted on our top 5 and submitted it.
 - We got Using NLP techniques on social media to detect natrual disasters.
-
+  - Deeper description of the project.
+- Very little experience in working on a group project.
+- Preconcieved notions about how working in a group works.
 * Aims
 - 2 main parts.
 - Being a cohesieve team.
 - Getting some form of the project done.
-
+- Personal aim was to eagarly apply the hot and trendy machine 
+  learning on the project to gain experience in it.
 * Methods
 - Weekly meetings.
 - Splitting up specific places of the work among people.
-
 * Results
 - Isolating team-members with specific tasks was not good for communication.
 - Not a very usable product.

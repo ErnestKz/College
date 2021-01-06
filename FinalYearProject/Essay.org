@@ -11,8 +11,7 @@
 - If there is a majority of one gender, then inequality will be perpetuated.
 
 - Does having disproporitonate ratio of gender in a field perpetuate the disproportion?
-  
-
+ 
 
 
 - Does social media amplify misnomers of gemder differenes?
@@ -22,6 +21,13 @@
   saying (not necesarily true) things and consuming information?
 
 
+- Percentage of STEM jobs is increasing.
+- Less women in STEM than men.
+
+- Women aren't encouraged enough to take on a STEM career.
+- Median wage in stem is greater than median wage in other jobs.
+- Growth of technology is increasing the demand of STEM workers.
+- The growth of stem worker demand faster than social changes.
 
 
 * Things to do 
@@ -117,3 +123,45 @@ OR bullie* OR torment* OR presecut*))
 
 ** Library Website
 - Libray databases
+
+
+** Computer Science research
+  - Allowing more automation to happen.
+    - Computer science research creates technology that automates information processing.
+    - The technology needs engineers to implement the technology in the working world.
+      - This increases the demand for people in STEM.
+
+  - Removing the need for manual jobs.
+    - The jobs that the computer science technology is automating are jobs previously done by 
+      people.
+
+- Computer science research contributes to the study of aritificial intelligence.
+- Artificial intelligence automates jobs.
+** Perpetuate
+  - Already a big inequality in the number of men and women involved in stem.
+  - Creates a bigger and bigger perceived difference between men and women.
+  - STEM jobs demand is growing faster than society changing.
+
+  - The difference in workfoce will create a futher gender bias
+
+- Stem jobs increasing
+- https://ec.europa.eu/eurostat/statistics-explained/index.php/ICT_specialists_-_statistics_on_hard-to-fill_vacancies_in_enterprises
+
+- *Disproportionate amount of women*
+https://www.europeandatajournalism.eu/eng/News/Data-news/The-ICT-sector-is-booming.-But-are-women-missing-out
+
+** Inequality and Bias
+  - Cognitive effect where men are seemingly different because of the existing difference.
+    - Which makes it harder for women to get into STEM.
+      - People tend to go towards the median of whatever perceived category they think they are in.
+  - Creates a blockage for women to earn the same amount as men.
+
+*Status quo bias*
+Or something different
+- The perceived difference forms an attitude that womean arent supposed to be aiming for a stem career
+https://www.semanticscholar.org/paper/Female-Role-Models%3A-Protecting-Women%E2%80%99s-Math-Test-Marx-Roman/e7c1ec1f75f97bce1006b71e7d95651261a86809?p2df
+
+- The perceiver attitude also affects women in the field negatively
+https://peerj.com/articles/cs-111/Information Technology
+
+

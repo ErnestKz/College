@@ -7,13 +7,19 @@ out vec2 texture_coordinate;
 out vec3 vertex_world;
 out vec3 tnorm;
 
+out vec3 displacement;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main() {
   vertex_world = vec3(model * vec4(aPos, 1.0));
+
+//  displacement = vec3(model[0][3],model[1][3], model[3][3]);
+  displacement = vec3(model[3]);
   tnorm = normalize(vec3(model * vec4(aNormal, 0.0)));
+    
   texture_coordinate = aTexCoords;
   gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

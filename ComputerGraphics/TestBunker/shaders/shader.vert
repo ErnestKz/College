@@ -19,8 +19,3 @@ void main() {
 }
 
 
-
-
-  //  if doing a non-uniform scale
-  //  mat3 normal_mat = mat3(transpose(inverse(model)));
-  //  tnorm = normalize(normal_mat * aNormal);

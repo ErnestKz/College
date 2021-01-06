@@ -1,0 +1,64 @@
+* How Computer Science Research can Perpetuate Inequality and Bias
+* Ernests Kuznecovs
+* 17332791
+The question is "How Computer Science Research can Perpetuate Inequality and Bias".   
+  
+First it is necessary to understand what Computer science research is. In the wider scope of 
+things, computer science is about processing information, and ways to automate the processing
+of information. The more is research about how information processing can be automated and 
+the better humans understand it, the wider range of possibilites begin to exist 
+for how to use the technology in the real world.  
+  
+Once the possibilites for applying technologies exist, business and organisations will seek
+to implement the relevant subset of the new technologies as part of their operations. This 
+generates a requirement for business to gather people that are able to implement these technologies.
+
+The profession that becomes in demand in order to implement these information processing technologies
+are ICT specialists (Information and Communication Technology.    
+
+Stats reviewd by europa.eu/eurstat makes it clear that ICT roles are increasing. [4]
+    
+So one effect of Computer Science research is an increased number ICT 
+specialists in demand, how does this perpetuate inequality and bias?   
+   
+There exists a huge disproportion in terms of the ratio of men to women that
+are employed as ICT specilaist, as of 2016, in the EU, out of all ICT speicalists
+only 16% were women, as mentioned in an article by the Euruopean Data Journalism
+Network [1].
+
+This is concerning as one of the most impactful aspects that determine what 
+the new generation of people decide to go into are role models. The study carried
+out by Marx, D. M. and J. S. Roman [2]. revealed that female students learning
+about a competent female experimenter buffer womens self-appraised maths ability, which 
+in turn led to successful performance on a challenging maths test.  
+ 
+It seems that a lack of women specialising in ICT could limit the spectrum of
+of options a young girl will think about when forming a vision of her future.   
+   
+This is concerning as the median slary for ICT specialists is much higher than
+the median salary of other fields. This is another aspect in which equality
+is being reduced.  
+
+Another way in which this may create bias is that having a low number 
+of women in ICT can create false perceptions of a womens ability to do certain
+tasks, as was shown in a study where womens code changes to programmers code bases
+were being accepted less once the it was evident the person was a woman. When the 
+identity is anonymous, women have a higher percentage of accepted code changes [3].
+
+The way in which this ties into Computer Science research is that if the rate of change
+of women joining ICT (inspired by activism for example) stays lower than the rate of demand created 
+from new technology being researched, then inequlaity and bias will be perpetuated.
+
+
+[1] https://www.europeandatajournalism.eu/eng/News/Data-news/The-ICT-sector-is-booming.-But-are-women-missing-out   
+   
+[2] Marx, D. M. and J. S. Roman. “Female Role Models: Protecting Women’s Math Test Performance.” Personality and Social Psychology Bulletin 28 (2002): 1183 - 1193.   
+   
+[3] Terrell J, Kofink A, Middleton J, Rainear C, Murphy-Hill E, Parnin C. 2016. Gender bias in open source: Pull request acceptance of women versus men. PeerJ PrePrints 4:e1733v1 https://doi.org/10.7287/peerj.preprints.1733v1   
+   
+[4] https://ec.europa.eu/eurostat/statistics-explained/index.php/ICT_specialists_-_statistics_on_hard-to-fill_vacancies_in_enterprises#Employment_and_recruitment_of_ICT_specialists   
+
+
+
+#+OPTIONS: toc:nil
+#+OPTIONS: num:nil
