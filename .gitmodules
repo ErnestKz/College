@@ -1,6 +1,0 @@
-[submodule "FunctionalProgramming/Examples/threep"]
-	path = FunctionalProgramming/Examples/threep
-	url = https://github.com/astynax/threep.git
-[submodule "FunctionalProgramming/Examples/Monads"]
-	path = FunctionalProgramming/Examples/Monads
-	url = https://github.com/MondayMorningHaskell/Monads.git
